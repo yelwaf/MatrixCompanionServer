@@ -1,5 +1,6 @@
 package com.logicleaptech.email;
 
+/*
 import javax.servlet.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
@@ -16,7 +17,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
 
-
+ */
 public class Email {
 
 	private final String SMTPhost = "localhost";
@@ -48,57 +49,43 @@ public class Email {
 
 	public boolean Send() {
 		boolean retVal = true;
-
-		try {
-			Properties props = new Properties();
-			props.put(SMTPprop, SMTPhost);
-			Session s = Session.getInstance(props, null);
-
-			MimeMessage message = new MimeMessage(s);
-
-			InternetAddress from = new InternetAddress(Fr);
-			message.setFrom(from);
-
-			InternetAddress to = new InternetAddress(To);
-			InternetAddress bcc = new InternetAddress(Bcc);
-
-			message.addRecipient(Message.RecipientType.TO, to);
-			message.addRecipient(Message.RecipientType.BCC, bcc);
-
-			message.setSentDate(new Date());
-
-			String name = request.getParameter("contactname");
-			message.setSubject("*** New Contact: " + name
-					+ " Beeline-PestControl.com Contact Request Form");
-			message.setText("This message was sent from:"
-					+ "\n"
-					+ "http://www.beeline-pestcontrol.com/contactus.html"
-					+ "\n"
-					+ "------------------------------------------------------------"
-					+ "\n"
-					+ "Name:  "
-					+ request.getParameter("contactname")
-					+ "\n"
-					+ "Email: "
-					+ request.getParameter("contactemail")
-					+ "\n"
-					+ "Phone: "
-					+ request.getParameter("contactphone")
-					+ "\n"
-					+ "------------------------------------------------------------"
-					+ "\n\n"
-					+ request.getParameter("contactmessage")
-					+ "\n\n"
-					+ "------------------------------------------------------------");
-
-			Transport.send(message);
-
-		} catch (MessagingException e) {
-			errorFlag = true;
-			// throw new RuntimeException(e);
-		}
-
+		/*
+		 * try { Properties props = new Properties(); props.put(SMTPprop,
+		 * SMTPhost); Session s = Session.getInstance(props, null);
+		 * 
+		 * MimeMessage message = new MimeMessage(s);
+		 * 
+		 * InternetAddress from = new InternetAddress(Fr);
+		 * message.setFrom(from);
+		 * 
+		 * InternetAddress to = new InternetAddress(To); InternetAddress bcc =
+		 * new InternetAddress(Bcc);
+		 * 
+		 * message.addRecipient(Message.RecipientType.TO, to);
+		 * message.addRecipient(Message.RecipientType.BCC, bcc);
+		 * 
+		 * message.setSentDate(new Date());
+		 * 
+		 * String name = request.getParameter("contactname");
+		 * message.setSubject("*** New Contact: " + name +
+		 * " Beeline-PestControl.com Contact Request Form");
+		 * message.setText("This message was sent from:" + "\n" +
+		 * "http://www.beeline-pestcontrol.com/contactus.html" + "\n" +
+		 * "------------------------------------------------------------" + "\n"
+		 * + "Name:  " + request.getParameter("contactname") + "\n" + "Email: "
+		 * + request.getParameter("contactemail") + "\n" + "Phone: " +
+		 * request.getParameter("contactphone") + "\n" +
+		 * "------------------------------------------------------------" +
+		 * "\n\n" + request.getParameter("contactmessage") + "\n\n" +
+		 * "------------------------------------------------------------");
+		 * 
+		 * Transport.send(message);
+		 * 
+		 * } catch (MessagingException e) { errorFlag = true; // throw new
+		 * RuntimeException(e); }
+		 */
 		return retVal;
+
 	}
 
 	public String getFrom() {

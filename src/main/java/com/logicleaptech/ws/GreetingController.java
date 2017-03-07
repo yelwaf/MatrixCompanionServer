@@ -25,6 +25,13 @@ import com.podio.user.UserAPI;
 @RestController
 public class GreetingController {
 
+	// private enum PODIODATATYPE { date, text, number, category }
+	final String cDate = "date";
+	final String cCategory = "category";
+	final String cNumber = "number";
+	final String cFloat = "float";
+	final String cText = "text";
+
 	final Logger logger = LoggerFactory.getLogger(GreetingController.class);
 
 	private final String[] podioField = { "date", "name", "title", "comments",
@@ -32,11 +39,144 @@ public class GreetingController {
 			"category-8", "category-7", "category-6", "category-5",
 			"category-4", "category-3", "category-2", "category", "book-read" };
 
+	private final String[][] podioField105 = { { "period-ending", cDate },
+			{ "name", cText }, { "comments", cText },
+			{ "info-meetings-attended", cNumber },
+			{ "guests-at-info-meetings", cNumber },
+			{ "team-phone-conference", cCategory }, { "d4d-hours", cFloat },
+			{ "bandit-signs", cNumber }, { "lois", cNumber },
+			{ "power-team-webinar", cCategory },
+			{ "member-team-mtg", cCategory }, { "fb-posted", cCategory },
+			{ "info-mtg-posted", cCategory },
+			{ "networking-event", cCategory }, { "new-members", cNumber },
+			{ "property-deals", cNumber }, { "book-read", cCategory },
+			{ "points", cFloat }, { "app-and-version", cText } };
+
 	private final String delimiter = ";";
 
 	private static final String template = "%s";
 	private final AtomicLong counter = new AtomicLong();
 	private final String authCode = "none";
+
+	@RequestMapping("/submitIPA105")
+	public Greeting submitIPA105(
+			@RequestParam(value = "code", defaultValue = "World") String name) {
+
+		logger.info("MtrxAL105: " + name + ";");
+
+		String myAppURI = "http://www.infinitehealthcoaching.com/MatrixActivity-0.0.1/v105";
+		String podioAPI = "https://api.podio.com";
+		// Elizabeth
+		// String podioAPIkey =
+		// "jV1qhnzcfBZU6RaghkYp7xJlzuS1PE0fmfHwSwwsciCMzr9HDoTUw35SaXEb85jb";
+		// String podioClientID = "matrixipareporting-z0u7tg";
+		// String podioUsername = "elizabeth@matrixinvestornetwork.com";
+		// String podioPassword = "Hooley8.22";
+		// Glenn
+		String podioAPIkey = "wsdhqz2F2KchBrmMByIdXKjLrMryM5iqzy4XQQYEopIRsyfOiiIPUNJ9XOTKNB6p";
+		String podioClientID = "matrix-companion";
+		String podioUsername = "g.fawley@logicleaptech.com";
+		String podioPassword = "sp1derMan";
+
+		String podioApplication = "Matrix Companion";
+
+		String authURI = "https://podio.com/oauth/authorize?client_id="
+				+ podioClientID + "&redirect_uri=" + myAppURI + "&scope=app";
+
+		ResourceFactory resourceFactory = new ResourceFactory(
+				new OAuthClientCredentials(podioClientID, podioAPIkey),
+				new OAuthUsernameCredentials(podioUsername, podioPassword));
+		APIFactory apiFactory = new APIFactory(resourceFactory);
+
+		// ItemAPI itemAPI = apiFactory.getClass(ItemAPI.class);
+
+		// ItemAPI itemAPI = new ItemAPI(resourceFactory);
+
+		UserAPI userAPI = apiFactory.getAPI(UserAPI.class);
+		ItemAPI itemAPI = apiFactory.getAPI(ItemAPI.class);
+
+		// //////////////////////////////////////
+
+		try {
+			ItemCreate item;
+			List<FieldValuesUpdate> list;
+			list = new ArrayList<FieldValuesUpdate>();
+
+			// Add the date field
+			int Idx = 0;
+
+			// Add text fields
+			do {
+
+				if (cDate.equals(podioField105[Idx][1])) {
+					PodioDate podioDate = null;
+
+					String dateField = Reusable.word(name, delimiter, 0);
+					String newDate = Reusable.mid(dateField, 7, 4); // year
+					newDate = newDate.concat("-");
+					newDate = newDate.concat(Reusable.left(dateField, 2)); // month
+					newDate = newDate.concat("-");
+					newDate = newDate.concat(Reusable.mid(dateField, 4, 2)); // day
+					newDate = newDate.concat(" 00:00:00");
+
+					// podioDate = new PodioDate("2016-12-01 00:00:00", "");
+					podioDate = new PodioDate(newDate, "");
+
+					list.add(podioDate
+							.getFieldValuesUpdate(podioField105[Idx][0]));
+				} else if (cText.equals(podioField105[Idx][1])) {
+					// String value must be at least 1 character or error
+					if (Reusable.word(name, delimiter, Idx).length() == 0) {
+						list.add(new FieldValuesUpdate(podioField105[Idx][0],
+								"value", " "));
+					} else {
+						list.add(new FieldValuesUpdate(podioField105[Idx][0],
+								"value", Reusable.word(name, delimiter, Idx)));
+					}
+
+				} else if (cNumber.equals(podioField105[Idx][1])) {
+					list.add(new FieldValuesUpdate(podioField105[Idx][0],
+							"value", Integer.parseInt(Reusable.word(name,
+									delimiter, Idx))));
+				} else if (cFloat.equals(podioField105[Idx][1])) {
+					list.add(new FieldValuesUpdate(podioField105[Idx][0],
+							"value", Float.parseFloat(Reusable.word(name,
+									delimiter, Idx))));
+				} else if (cCategory.equals(podioField105[Idx][1])) {
+					list.add(new FieldValuesUpdate(podioField105[Idx][0],
+							"value", getPodioValue(Reusable.word(name,
+									delimiter, Idx))));
+				}
+				Idx++;
+
+			} while (Idx < 19);
+
+			// String xyz = "pdq";
+			// list.add(new FieldValuesUpdate(podioField[3], "value", xyz));
+
+			// Add category fields
+
+			// list.add(new FieldValuesUpdate("title", "value", "POC"));
+			// list.add(new FieldValuesUpdate("number", "value", 555));
+
+			// title, testfield and testintfield are the external_ids of the
+			// fields
+			item = new ItemCreate("externalId", list,
+					Collections.<Integer> emptyList(),
+					Collections.<String> emptyList());
+
+			// itemAPI.addItem(appId, item, false);
+
+			itemAPI.addItem(18027997, item, false);
+			// ///////////////////////
+			return new Greeting(counter.incrementAndGet(), String.format(
+					template, Reusable.word(name, delimiter, 1)));
+			// return new Greeting(counter.incrementAndGet(), name);
+		} catch (Exception e) {
+			return new Greeting(counter.incrementAndGet(), String.format(
+					template, "error: " + e.toString()));
+		}
+	}
 
 	@RequestMapping("/greeting")
 	public Greeting greeting(
